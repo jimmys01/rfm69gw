@@ -6,6 +6,8 @@ The project is currently in beta-stage with a working hardware prototype and ful
 
 ## Hardware
 
+![Sonoff board - front view](/images/20160819_002338.jpg)
+
 The custom PCB has the minimum required components:
 
 * ESP12 footprint
@@ -92,12 +94,15 @@ On normal boot (i.e. button not pressed) it will execute the firmware. It config
 
 Obviously the default values for WIFI network and MQTT will probably not match your requirements. The device will start in Soft AP creating a WIFI SSID named "RFM69_GATEWAY". Connect with phone, PC, laptop, whatever to that network, password is "fibonacci". Once connected browse to 192.168.4.1 and you will be presented a configuration page where you will be able to define up to 3 possible WIFI networks and the MQTT configuration parameters, and topic mappings.
 
-It will then try to connect to the configure WIFI networks one after the other. If none of the 3 attempts succeed it will default to SoftAP mode again. Once connected it will try to connect the MQTT server.
+It will then try to connect to the configured WIFI networks one after the other. If none of the 3 attempts succeed it will default to SoftAP mode again. Once connected it will try to connect the MQTT server.
 
 You can configure several aspects, most importantly:
 
-* **nodeID**, **key** and **topic** allows you to map a given key from a given nodeID to a certain MQTT topic
-* **defaultTopic**, if defined, will be used as a default topic for any combination of nodeID+key not mapped. You can use {nodeid} and {key} as placeholders that will be replaced in execution time.
+* up to 3 **wifi SSID and password**
+* **MQTT server, port** and optionally **user and password**
+* **MQTT topics for IP and heartbeat messages**
+* **nodeID**, **key** and **topic** to map a given key from a given nodeID to a certain MQTT topic
+* a **defaultTopic**, if defined, will be used as a default topic for any combination of nodeID+key not mapped. You can use {nodeid} and {key} as placeholders that will be replaced in execution time.
 
 Messages from the nodes (probably Monteinos) do have to stick to one of these formats:
 
@@ -106,7 +111,7 @@ Messages from the nodes (probably Monteinos) do have to stick to one of these fo
 <key>:<value>:<packetID>
 ```
 
-The first one being the default for Rusu's MotionNotes, for instance. "BAT:3812" could be a valid payload to notify battery status. The ```send``` method of the RFM69Manager library included will take care of the formatting. It will also add a correlative packetID that can be used in the gateway to detect duplicates or missing packages.
+The first one being the default for Rusu's MotionNotes, for instance. "BAT:3812" could be a valid payload to notify battery status. The ```send``` method of the RFM69Manager library included will take care of the formatting. It will also add a correlative packetID that will be used in the gateway to detect duplicates or missing packages.
 
 The RFM69Manager library inherits from RFM69_ATC, so it supports [Automatic Transmission Control][8] that improves battery life by reducing radio power dynamically.
 

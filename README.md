@@ -20,13 +20,13 @@ The custom PCB has the minimum required components:
 
 The ESP12 and RFM69CW modules are wired according to the following schema:
 
-| ESP12 | RFM69CW |
-|-------|---------|
-| GPIO4 | DIO0 |
-| GPIO12 | MISO |
-| GPIO13 | MOSI |
-| GPIO14 | SCK |
-| GPIO15 | NSS |
+| ESP12  | RFM69CW |
+|--------|---------|
+| GPIO4  | DIO0    |
+| GPIO12 | MISO    |
+| GPIO13 | MOSI    |
+| GPIO14 | SCK     |
+| GPIO15 | NSS     |
 
 You can also use your own hardware, SPI pins will probably be the same, only remember to change the pin numbers for SPI_CS and interruption in the RFM69Manager.h file.
 

@@ -16,7 +16,7 @@ Copyright (C) 2016 by Xose Pérez <xose dot perez at gmail dot com>
 // OTA
 // -----------------------------------------------------------------------------
 
-void OTASetup() {
+void otaSetup() {
 
     ArduinoOTA.setPort(OTA_PORT);
     ArduinoOTA.setHostname((char *) HOSTNAME);
@@ -55,6 +55,6 @@ void OTASetup() {
 
 }
 
-void OTALoop() {
+void otaLoop() {
     ArduinoOTA.handle();
 }

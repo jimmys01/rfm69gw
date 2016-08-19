@@ -1,3 +1,6 @@
 [submodule "vendor/embedis"]
 	path = vendor/embedis
 	url = https://github.com/thingSoC/embedis.git
+[submodule "vendor/SPIFlash"]
+	path = vendor/SPIFlash
+	url = git@github.com:xoseperez/SPIFlash.git

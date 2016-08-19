@@ -67,7 +67,7 @@ void processMessage(packet_t * data) {
                 if (packetIDs[data->nodeID] != (data->packetID-1)) {
                     Serial.println(" MISSING PACKETS!!");
                 }
-            }]
+            }
         #endif
 
     }
@@ -138,16 +138,18 @@ void hardwareLoop() {
 void setup() {
     hardwareSetup();
     settingsSetup();
-    radioSetup();
     wifiSetup();
-    webServerSetup();
+    otaSetup();
     mqttSetup();
+    webServerSetup();
+    radioSetup();
 }
 
 void loop() {
     settingsLoop();
-    radioLoop();
     wifiLoop();
+    radioLoop();
+    otaLoop();
     mqttLoop();
     hardwareLoop();
     webServerLoop();

@@ -6,7 +6,7 @@ The project is currently in beta-stage with a working hardware prototype and ful
 
 ## Hardware
 
-![Sonoff board - front view](/images/20160819_002338.jpg)
+![RFM69GW board - front view](/images/20160819_002338.jpg)
 
 The custom PCB has the minimum required components:
 

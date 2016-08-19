@@ -14,7 +14,7 @@ The custom PCB has the minimum required components:
 * RFM69CW module footprint
 * Two push buttons to RESET and FLASH the board
 * A 2.1 5mm jack for powering with AMS1117-3V3 to power the modules
-* Filtering and pushup resistors and capacitors
+* Filtering and push  up resistors and capacitors
 * A 5 pin header to program it
 * An edge footprint for an SMA or RP-SMA antenna
 
@@ -36,7 +36,7 @@ You can also use your own hardware, SPI pins will probably be the same, only rem
 #define IRQ_NUM             5
 ```
 
-Note: the was an error in the ESP12 footprint for version 0.1 of the board and GPIO 4 and 5 where swapped, so even thou the schematic showed IRQ pin to be GPIO4 it was 5 instead.
+Note: the was an error in the ESP12 footprint for version 0.1 of the board and GPIO 4 and 5 were swapped, so even thou the schematic showed IRQ pin to be GPIO4 it was 5 instead.
 
 ## Firmware
 
@@ -52,10 +52,10 @@ Note: the was an error in the ESP12 footprint for version 0.1 of the board and G
 The project uses a series of state-of-the-art libraries:
 
 * [RFM69_ATC][5] by Felix Rusu and Thomas Studwell
-* [SPIFlash][6] by Felix Rusu
+* [SPIFlash][6] by Felix Rusu with small changes to make it compile under ESP8266, check my [fork][9]
 * [PubSubClient][3] by Nick O'Leary
 * [ArduinoJson][4] by Benoit Blanchon
-* [Embedis][7] by thingsSoC
+* [Embedis][7] by PatternAgents
 * [PureCSS][1] by Yahoo
 
 ## Flashing
@@ -129,3 +129,4 @@ After flashing the firmware via serial do a hard reset of the device (unplug & p
 [6]: https://github.com/LowPowerLab/SPIFlash
 [7]: https://github.com/thingSoC/embedis
 [8]: https://lowpowerlab.com/blog/2015/11/11/rfm69_atc-automatic-transmission-control/
+[9]: https://github.com/xoseperez/SPIFlash

@@ -112,6 +112,8 @@ void blink(unsigned int time) {
 
 void hardwareSetup() {
     Serial.begin(SERIAL_BAUD);
+    Serial.println();
+    Serial.println();
     pinMode(LED_PIN, OUTPUT);
 }
 

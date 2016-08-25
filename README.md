@@ -36,6 +36,23 @@ You can also use your own hardware, SPI pins will probably be the same, only rem
 #define IRQ_NUM             5
 ```
 
+**UPDATE**: The RFM69 library works a lot better over ESP8266 changing the SPI clock divider to 2. You will have to modify the source code for RFM69.cpp file with this patch:
+
+```
+diff --git a/RFM69.cpp b/RFM69.cpp
+index a1e1eeb..ad2e30b 100644
+--- a/RFM69.cpp
++++ b/RFM69.cpp
+@@ -450,7 +450,7 @@ void RFM69::select() {
+   // set RFM69 SPI settings
+   SPI.setDataMode(SPI_MODE0);
+   SPI.setBitOrder(MSBFIRST);
+-  SPI.setClockDivider(SPI_CLOCK_DIV4); // decided to slow down from DIV2 after SPI stalling in some instances, especially visible on mega1284p when RFM69 and FLASH chip both present
++  SPI.setClockDivider(SPI_CLOCK_DIV2); // speeding it up for the ESP8266
+   digitalWrite(_slaveSelectPin, LOW);
+ }
+```
+
 Note: the was an error in the ESP12 footprint for version 0.1 of the board and GPIO 4 and 5 were swapped, so even thou the schematic showed IRQ pin to be GPIO4 it was 5 instead.
 
 ## Firmware

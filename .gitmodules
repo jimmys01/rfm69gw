@@ -4,3 +4,6 @@
 [submodule "vendor/SPIFlash"]
 	path = vendor/SPIFlash
 	url = git@github.com:xoseperez/SPIFlash.git
+[submodule "vendor/RFM69"]
+	path = vendor/RFM69
+	url = https://github.com/LowPowerLab/RFM69.git

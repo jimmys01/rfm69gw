@@ -24,7 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <RFM69Manager.h>
-#include <WirelessHEX69.h>
+#include <SPI.h>
+#include <SPIFlash.h>
+//#include <WirelessHEX69.h>
 
 // -----------------------------------------------------------------------------
 // Configutation
@@ -36,19 +38,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define FREQUENCY           RF69_868MHZ
 #define ENCRYPTKEY          "fibonacci0123456"
 #define IS_RFM69HW          0
-//#define ENABLE_ATC
 
 #define SERIAL_BAUD         115200
-#define LED_PIN             9       // Moteinos have LEDs on D9
-#define FLASH_SS            8       // and FLASH SS on D8
-#define FLASH_ID            0xEF30  //EF30 for 4mbit  Windbond chip (W25X40CL)
+
+#ifdef MONTEINO
+    #define LED_PIN             9       // Moteinos have LEDs on D9
+    #define FLASH_SS            8       // and FLASH SS on D8
+    #define FLASH_ID            0xEF30  // EF30 for 4mbit  Windbond chip (W25X40CL)
+#endif
+
+#ifdef JEELINK
+    #define LED_PIN             9       // Jeenodes have LEDs on D9
+    #define FLASH_SS            8       // and FLASH SS on D8
+    #define FLASH_ID            0x2020  // 2020 for ??
+#endif
 
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
 
-RFM69Manager radio;
 SPIFlash flash(FLASH_SS, FLASH_ID);
+RFM69Manager radio;
 
 unsigned long transmitInterval = 2000;
 
@@ -56,11 +66,14 @@ unsigned long transmitInterval = 2000;
 // Utils
 // -----------------------------------------------------------------------------
 
-void blink(unsigned int time) {
+void blink(byte times, byte mseconds) {
     pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, HIGH);
-    delay(time);
-    digitalWrite(LED_PIN, LOW);
+    for (byte i=0; i<times; i++) {
+        digitalWrite(LED_PIN, LOW);
+        delay(mseconds);
+        digitalWrite(LED_PIN, HIGH);
+        delay(mseconds);
+    }
 }
 
 void radioSend() {
@@ -69,9 +82,33 @@ void radioSend() {
 	unsigned long currPeriod = millis() / transmitInterval;
 	if (currPeriod != lastPeriod) {
 	    lastPeriod = currPeriod;
-        radio.send((char *) "BAT", (char *) "2310", (uint8_t) 2);
-        blink(50);
+        radio.send((char *) "BAT", (char *) "2310", (uint8_t) 5);
+        blink(1, 50);
 	}
+
+}
+
+// -----------------------------------------------------------------------------
+// Flash
+// -----------------------------------------------------------------------------
+
+void flashSetup() {
+
+    if (flash.initialize()) {
+        Serial.print("SPI Flash Init OK. Unique MAC = [");
+        flash.readUniqueId();
+        for (byte i=0;i<8;i++) {
+            Serial.print(flash.UNIQUEID[i], HEX);
+            if (i!=8) Serial.print(':');
+        }
+        Serial.println(']');
+        blink(1, 50);
+
+    } else {
+        Serial.println("SPI Flash MEM not found (is chip soldered?)...");
+        Serial.println(flash.readDeviceId());
+        blink(5, 50);
+    }
 
 }
 
@@ -81,7 +118,7 @@ void radioSend() {
 
 void radioSetup() {
     delay(10);
-    radio.initialize(FREQUENCY, NODEID, NETWORKID, GATEWAYID, ENCRYPTKEY, IS_RFM69HW);
+    radio.initialize(FREQUENCY, NODEID, NETWORKID, ENCRYPTKEY, GATEWAYID);
 }
 
 void radioLoop() {
@@ -102,7 +139,7 @@ void radioLoop() {
 
 void setup() {
     Serial.begin(SERIAL_BAUD);
-    flash.initialize();
+    flashSetup();
     radioSetup();
 }
 

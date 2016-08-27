@@ -68,12 +68,12 @@ Note: the was an error in the ESP12 footprint for version 0.1 of the board and G
 
 The project uses a series of state-of-the-art libraries:
 
-* [RFM69_ATC][5] by Felix Rusu and Thomas Studwell
-* [SPIFlash][6] by Felix Rusu with small changes to make it compile under ESP8266, check my [fork][9]
+* [RFM69_ATC][5] by Felix Rusu and Thomas Studwell with a small change (check patch above)
 * [PubSubClient][3] by Nick O'Leary
 * [ArduinoJson][4] by Benoit Blanchon
 * [Embedis][7] by PatternAgents
 * [PureCSS][1] by Yahoo
+* And some of the libraries from the [Arduino core for ESP8266][10], by @igrr (Ivan Grokhotkov), @Links2004, @me-no-dev et a,.
 
 ## Flashing
 
@@ -147,3 +147,4 @@ After flashing the firmware via serial do a hard reset of the device (unplug & p
 [7]: https://github.com/thingSoC/embedis
 [8]: https://lowpowerlab.com/blog/2015/11/11/rfm69_atc-automatic-transmission-control/
 [9]: https://github.com/xoseperez/SPIFlash
+[10]: https://github.com/esp8266/Arduino

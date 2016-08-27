@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 SPIFlash flash(FLASH_SS, FLASH_ID);
 RFM69Manager radio;
 
-unsigned long transmitInterval = 2000;
+unsigned long transmitInterval = 5000;
 
 // -----------------------------------------------------------------------------
 // Utils
@@ -69,11 +69,12 @@ unsigned long transmitInterval = 2000;
 void blink(byte times, byte mseconds) {
     pinMode(LED_PIN, OUTPUT);
     for (byte i=0; i<times; i++) {
-        digitalWrite(LED_PIN, LOW);
-        delay(mseconds);
+        if (i>0) delay(mseconds);
         digitalWrite(LED_PIN, HIGH);
         delay(mseconds);
+        digitalWrite(LED_PIN, LOW);
     }
+    pinMode(LED_PIN, INPUT);
 }
 
 void radioSend() {
@@ -82,7 +83,8 @@ void radioSend() {
 	unsigned long currPeriod = millis() / transmitInterval;
 	if (currPeriod != lastPeriod) {
 	    lastPeriod = currPeriod;
-        radio.send((char *) "BAT", (char *) "2310", (uint8_t) 5);
+        radio.send((char *) "BAT", (char *) "2310", (uint8_t) 2);
+        radio.sleep();
         blink(1, 50);
 	}
 
@@ -119,6 +121,7 @@ void flashSetup() {
 void radioSetup() {
     delay(10);
     radio.initialize(FREQUENCY, NODEID, NETWORKID, ENCRYPTKEY, GATEWAYID);
+    radio.sleep();
 }
 
 void radioLoop() {

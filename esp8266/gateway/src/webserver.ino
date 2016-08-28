@@ -79,7 +79,7 @@ void handleGet() {
     root["hostname"] = getSetting("hostname", HOSTNAME);
     root["network"] = getNetwork();
     root["ip"] = getIP();
-    root["mqttStatus"] = mqtt.connected() ? "1" : "0";
+    root["mqttStatus"] = mqttConnected() ? "1" : "0";
     root["mqttServer"] = getSetting("mqttServer", MQTT_SERVER);
     root["mqttPort"] = getSetting("mqttPort", String(MQTT_PORT));
     root["mqttUser"] = getSetting("mqttUser", MQTT_USER);
@@ -116,6 +116,7 @@ void handlePost() {
         Serial.println(F("[WEBSERVER] Request: /post"));
     #endif
 
+    bool disconnectMQTT = false;
     unsigned int mappingCount = getSetting("mappingCount", "0").toInt();
     unsigned int network = 0;
     unsigned int mapping = 0;
@@ -144,7 +145,12 @@ void handlePost() {
             ++mapping;
         }
 
-        setSetting(key, value);
+        // Check wether we will have to reconfigure MQTT connection
+        if (!disconnectMQTT && key.startsWith("mqtt")) {
+            if (value != getSetting(key)) disconnectMQTT = true;
+        }
+
+        if (value != getSetting(key)) setSetting(key, value);
 
     }
 
@@ -163,7 +169,13 @@ void handlePost() {
 
     // Disconnect from current WIFI network if it's not the first on the list
     // wifiLoop will take care of the reconnection
-    if (getNetwork() != getSetting("ssid0")) wifiDisconnect();
+    if (getNetwork() != getSetting("ssid0")) {
+        wifiDisconnect();
+
+    // else check if we should reconigure MQTT connection
+    } else if (disconnectMQTT) {
+        mqttDisconnect();
+    }
 
 }
 

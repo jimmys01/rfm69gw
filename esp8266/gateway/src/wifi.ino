@@ -37,7 +37,7 @@ void wifiSetup() {
 
         // Disconnect from MQTT server if no WIFI
         if (code != MESSAGE_CONNECTED) {
-                if (mqtt.connected()) mqtt.disconnect();
+            if (mqttConnected()) mqttDisconnect();
         }
 
         #if DEBUG

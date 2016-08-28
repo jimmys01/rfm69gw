@@ -19,6 +19,14 @@ PubSubClient mqtt(client);
 // MQTT
 // -----------------------------------------------------------------------------
 
+bool mqttConnected() {
+    return mqtt.connected();
+}
+
+void mqttDisconnect() {
+    mqtt.disconnect();
+}
+
 void mqttSend(char * topic, char * message) {
 
     if (!mqtt.connected()) return;

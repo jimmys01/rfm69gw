@@ -62,6 +62,9 @@ bool handleFileRead(String path) {
 
 void handleGet() {
 
+    // Avoid web clients to be disconnected for X minutes when in AP mode
+    resetConnectionTimeout();
+
     #if DEBUG
         Serial.println("[WEBSERVER] Request: /get");
     #endif

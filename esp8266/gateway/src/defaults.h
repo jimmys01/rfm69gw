@@ -17,6 +17,8 @@
 #define OTA_PASS                "fibonacci"
 #define OTA_PORT                8266
 
+#define WIFI_RECONNECT_INTERVAL 300000
+
 #define MQTT_RECONNECT_DELAY    5000
 #define MQTT_RETAIN             true
 #define MQTT_SERVER             "192.168.1.100"

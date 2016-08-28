@@ -37,7 +37,7 @@ void wifiSetup() {
 
         // Disconnect from MQTT server if no WIFI
         if (code != MESSAGE_CONNECTED) {
-            if (mqtt.connected()) mqtt.disconnect();
+                if (mqtt.connected()) mqtt.disconnect();
         }
 
         #if DEBUG
@@ -117,9 +117,9 @@ void wifiConnect() {
     //WiFi.printDiag(Serial);
 
     jw.cleanNetworks();
-    if (getValue("ssid0").length() > 0) jw.addNetwork((char *) getValue("ssid0").c_str(), (char *) getValue("pass0").c_str());
-    if (getValue("ssid1").length() > 0) jw.addNetwork((char *) getValue("ssid1").c_str(), (char *) getValue("pass1").c_str());
-    if (getValue("ssid2").length() > 0) jw.addNetwork((char *) getValue("ssid2").c_str(), (char *) getValue("pass2").c_str());
+    if (getSetting("ssid0").length() > 0) jw.addNetwork((char *) getSetting("ssid0").c_str(), (char *) getSetting("pass0").c_str());
+    if (getSetting("ssid1").length() > 0) jw.addNetwork((char *) getSetting("ssid1").c_str(), (char *) getSetting("pass1").c_str());
+    if (getSetting("ssid2").length() > 0) jw.addNetwork((char *) getSetting("ssid2").c_str(), (char *) getSetting("pass2").c_str());
 
     // Connecting
     if (!jw.autoConnect()) {

@@ -116,7 +116,8 @@ void handlePost() {
         Serial.println(F("[WEBSERVER] Request: /post"));
     #endif
 
-    bool disconnectMQTT = false;
+    bool dirty = false;
+    bool dirtyMQTT = false;
     unsigned int mappingCount = getSetting("mappingCount", "0").toInt();
     unsigned int network = 0;
     unsigned int mapping = 0;
@@ -145,12 +146,11 @@ void handlePost() {
             ++mapping;
         }
 
-        // Check wether we will have to reconfigure MQTT connection
-        if (!disconnectMQTT && key.startsWith("mqtt")) {
-            if (value != getSetting(key)) disconnectMQTT = true;
+        if (value != getSetting(key)) {
+            setSetting(key, value);
+            dirty = true;
+            if (key.startsWith("mqtt")) dirtyMQTT = true;
         }
-
-        if (value != getSetting(key)) setSetting(key, value);
 
     }
 
@@ -159,11 +159,13 @@ void handlePost() {
         delSetting("nodeid" + String(i));
         delSetting("key" + String(i));
         delSetting("topic" + String(i));
+        dirty = true;
     }
 
     String value = String(mapping);
     setSetting("mappingCount", value);
-    saveSettings();
+
+    if (dirty) saveSettings();
 
     server.send(202, "text/json", "{}");
 
@@ -173,7 +175,7 @@ void handlePost() {
         wifiDisconnect();
 
     // else check if we should reconigure MQTT connection
-    } else if (disconnectMQTT) {
+    } else if (dirtyMQTT) {
         mqttDisconnect();
     }
 

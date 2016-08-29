@@ -9,7 +9,6 @@
 #define SPI_CS                  SS
 #define IRQ_PIN                 5
 #define IS_RFM69HW              0
-#define IRQ_NUM                 5
 
 #define HOSTNAME                "RFM69_GATEWAY"
 #define AP_PASS                 "fibonacci"

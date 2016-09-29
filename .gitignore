@@ -2,6 +2,6 @@
 *.b#?
 .modgit
 firmware*
-.pioenvs
+.pio*
 .sconsign.dblite
 credentials.h

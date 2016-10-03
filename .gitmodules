@@ -7,3 +7,6 @@
 [submodule "vendor/RFM69"]
 	path = vendor/RFM69
 	url = https://github.com/LowPowerLab/RFM69.git
+[submodule "vendor/justwifi"]
+	path = vendor/justwifi
+	url = https://xoseperez@bitbucket.org/xoseperez/justwifi.git

@@ -29,11 +29,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#include <WirelessHEX69.h>
 
 // -----------------------------------------------------------------------------
-// Configutation
+// Configuration
 // -----------------------------------------------------------------------------
 
-#define NODEID              1
-#define GATEWAYID           1
+#define NODEID              2
+#define GATEWAYID           2
+#define PROMISCUOUS         1
 #define NETWORKID           164
 #define FREQUENCY           RF69_868MHZ
 #define ENCRYPTKEY          "fibonacci0123456"
@@ -41,26 +42,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define SERIAL_BAUD         115200
 
-#ifdef MONTEINO
-    #define LED_PIN             9       // Moteinos have LEDs on D9
-    #define FLASH_SS            8       // and FLASH SS on D8
-    #define FLASH_ID            0xEF30  // EF30 for 4mbit  Windbond chip (W25X40CL)
+#ifdef MOTEINO
+    #define LED_PIN         9       // Moteinos have LEDs on D9
+    #define FLASH_SS        8       // and FLASH SS on D8
+    #define FLASH_ID        0xEF30  // EF30 for 4mbit  Windbond chip (W25X40CL)
+    #define USE_FLASH       1
 #endif
 
 #ifdef JEELINK
-    #define LED_PIN             9       // Jeenodes have LEDs on D9
-    #define FLASH_SS            8       // and FLASH SS on D8
-    #define FLASH_ID            0x2020  // 2020 for ??
+    #define LED_PIN         9       // Jeenodes have LEDs on D9
+    #define FLASH_SS        8       // and FLASH SS on D8
+    #define FLASH_ID        0x2020  // 2020 for ??
+    #define USE_FLASH       0
 #endif
 
 // -----------------------------------------------------------------------------
 // Globals
 // -----------------------------------------------------------------------------
 
-SPIFlash flash(FLASH_SS, FLASH_ID);
+#if USE_FLASH
+    SPIFlash flash(FLASH_SS, FLASH_ID);
+#endif
 RFM69Manager radio;
-
-unsigned long transmitInterval = 2000;
 
 // -----------------------------------------------------------------------------
 // Utils
@@ -79,6 +82,8 @@ void blink(byte times, byte mseconds) {
 // -----------------------------------------------------------------------------
 // Flash
 // -----------------------------------------------------------------------------
+
+#if USE_FLASH
 
 void flashSetup() {
 
@@ -100,13 +105,42 @@ void flashSetup() {
 
 }
 
+#endif
+
 // -----------------------------------------------------------------------------
 // RFM69
 // -----------------------------------------------------------------------------
 
+void radioMessage(packet_t * data) {
+
+    blink(5, 1);
+
+    Serial.print("[MESSAGE] messageID:");
+    Serial.print(data->messageID);
+    Serial.print(" senderID:");
+    Serial.print(data->senderID);
+    Serial.print(" targetID:");
+    Serial.print(data->targetID);
+    Serial.print(" packetID:");
+    Serial.print(data->packetID);
+    Serial.print(" name:");
+    Serial.print(data->name);
+    Serial.print(" value:");
+    Serial.print(data->value);
+    Serial.print(" rssi:");
+    Serial.print(data->rssi);
+    Serial.println();
+
+}
+
 void radioSetup() {
     delay(10);
-    radio.initialize(FREQUENCY, NODEID, NETWORKID, ENCRYPTKEY);
+    if (!radio.initialize(FREQUENCY, NODEID, NETWORKID, ENCRYPTKEY)) {
+        Serial.println("[RADIO] Error initializing radio");
+        while (true);
+    }
+    radio.promiscuous(PROMISCUOUS);
+    radio.onMessage(radioMessage);
 }
 
 void radioLoop() {
@@ -119,8 +153,14 @@ void radioLoop() {
 
 void setup() {
     Serial.begin(SERIAL_BAUD);
-    flashSetup();
+    Serial.println();
+    Serial.println();
+    #if USE_FLASH
+        flashSetup();
+    #endif
     radioSetup();
+    Serial.println();
+    Serial.println();
 }
 
 void loop() {

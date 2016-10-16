@@ -72,7 +72,7 @@ void processMessage(packet_t * data) {
     blink(5, 1);
 
     DEBUG_MSG(
-        "[MESSAGE] messageID:%d senderID:%d targetID:%d packetID:%d name:%s value:%s rssi:%d",
+        "[MESSAGE] messageID:%d senderID:%d targetID:%d packetID:%d name:%s value:%s rssi:%d\n",
         data->messageID,
         data->senderID,
         data->targetID,

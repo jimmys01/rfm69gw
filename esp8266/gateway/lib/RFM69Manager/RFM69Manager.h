@@ -67,6 +67,7 @@ class RFM69Manager: public RFM69_ATC {
             return send(_gatewayID, name, value, 0, requestACK);
         }
         bool loop();
+        void promiscuous(bool promiscuous);
         packet_t * getMessage() {
             return &_message;
         }

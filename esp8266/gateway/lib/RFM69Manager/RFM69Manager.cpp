@@ -39,25 +39,36 @@ bool RFM69Manager::initialize(uint8_t frequency, uint8_t nodeID, uint8_t network
     if (_isRFM69HW) setHighPower();
 
     #if RADIO_DEBUG
+        char buff[50];
+        sprintf(buff, "[RADIO] Working at %d Mhz", frequency == RF69_433MHZ ? 433 : frequency == RF69_868MHZ ? 868 : 915);
+        Serial.println(buff);
         Serial.print(F("[RADIO] Node: "));
         Serial.println(nodeID);
         Serial.print(F("[RADIO] Network: "));
         Serial.println(networkID);
         if (gatewayID == 0) {
-            Serial.println("[RADIO] This node is a gateway.");
+            Serial.println("[RADIO] This node is a gateway");
         } else {
             Serial.print(F("[RADIO] Gateway: "));
             Serial.println(gatewayID);
         }
-
-        char buff[50];
-        sprintf(buff, "[RADIO] Working at %d Mhz...", frequency == RF69_433MHZ ? 433 : frequency == RF69_868MHZ ? 868 : 915);
-        Serial.println(buff);
         Serial.println(F("[RADIO] Auto Transmission Control (ATC) enabled"));
+
     #endif
 
     return ret;
 
+}
+
+void RFM69Manager::promiscuous(bool promiscuous) {
+    RFM69_ATC::promiscuous(promiscuous);
+    #if RADIO_DEBUG
+        if (_promiscuousMode) {
+            Serial.println(F("[RADIO] Promiscuous mode ON"));
+        } else {
+            Serial.println(F("[RADIO] Promiscuous mode OFF"));
+        }
+    #endif
 }
 
 void RFM69Manager::onMessage(TMessageCallback fn) {

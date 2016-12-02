@@ -71,6 +71,25 @@ void RFM69Manager::promiscuous(bool promiscuous) {
     #endif
 }
 
+// overriding select the RFM69 transceiver (save SPI settings, set CS low)
+void RFM69Manager::select() {
+    noInterrupts();
+    #if defined (SPCR) && defined (SPSR)
+        // save current SPI settings
+        _SPCR = SPCR;
+        _SPSR = SPSR;
+    #endif
+    // set RFM69 SPI settings
+    SPI.setDataMode(SPI_MODE0);
+    SPI.setBitOrder(MSBFIRST);
+    #if defined(ARDUINO_ARCH_ESP8266)
+        SPI.setClockDivider(SPI_CLOCK_DIV2); // speeding it up for the ESP8266
+    #else
+        SPI.setClockDivider(SPI_CLOCK_DIV4);
+    #endif
+    digitalWrite(_slaveSelectPin, LOW);
+}
+
 void RFM69Manager::onMessage(TMessageCallback fn) {
     _callback = fn;
 }

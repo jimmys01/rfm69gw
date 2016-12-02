@@ -2,46 +2,31 @@ var websock;
 var tabindex = $("#mapping > div").length * 3 + 50;
 
 function doUpdate() {
-    var self = $(this);
-    self.addClass("loading");
-    $.ajax({
-        'method': 'POST',
-        'url': '/save',
-        'dataType': 'json',
-        'data': $("#formSave").serializeArray()
-    }).done(function(data) {
-        self.removeClass("loading");
-    }).fail(function() {
-        self.removeClass("loading");
-    });
+    var data = $("#formSave").serializeArray();
+    websock.send(JSON.stringify({'config': data}));
+    $(".powExpected").val(0);
+    return false;
 }
 
 function doReset() {
     var response = window.confirm("Are you sure you want to reset the device?");
-    if (response == false) return;
-    var self = $(this);
-    self.addClass("loading");
-    $.ajax({
-        'method': 'GET',
-        'url': '/reset'
-    });
+    if (response == false) return false;
+    websock.send(JSON.stringify({'action': 'reset'}));
+    return false;
 }
 
 function doReconnect() {
     var response = window.confirm("Are you sure you want to disconnect from the current WIFI network?");
-    if (response == false) return;
-    var self = $(this);
-    self.addClass("loading");
-    $.ajax({
-        'method': 'GET',
-        'url': '/reconnect'
-    });
+    if (response == false) return false;
+    websock.send(JSON.stringify({'action': 'reconnect'}));
+    return false;
 }
 
 function showPanel() {
     $(".panel").hide();
     $("#" + $(this).attr("data")).show();
     if ($("#layout").hasClass('active')) toggleMenu();
+    $("input[type='checkbox']").iphoneStyle("calculateDimensions").iphoneStyle("refresh");
 };
 
 function addMapping() {
@@ -67,14 +52,6 @@ function toggleMenu() {
 
 function processData(data) {
 
-    // pre-process
-    if ("network" in data) {
-        data.network = data.network.toUpperCase();
-    }
-    if ("mqttStatus" in data) {
-        data.mqttStatus = data.mqttStatus ? "CONNECTED" : "NOT CONNECTED";
-    }
-
     // title
     if ("app" in data) {
         $(".pure-menu-heading").html(data.app);
@@ -85,61 +62,84 @@ function processData(data) {
         document.title = title;
     }
 
-    // automatic assign
     Object.keys(data).forEach(function(key) {
+
+        // Wifi
+        if (key == "wifi") {
+            var groups = $("#panel-wifi .pure-g");
+            for (var i in data.wifi) {
+                var wifi = data.wifi[i];
+                Object.keys(wifi).forEach(function(key) {
+                    var id = "input[name=" + key + "]";
+                    if ($(id, groups[i]).length) $(id, groups[i]).val(wifi[key]);
+                });
+            };
+            return;
+        }
+
+		// Topics
+		if (key == "mapping") {
+			for (var i in data.mapping) {
+
+				// add a new row
+				addMapping();
+
+				// get group
+				var line = $("#mapping .pure-g")[i];
+
+				// fill in the blanks
+				var mapping = data.mapping[i];
+				Object.keys(mapping).forEach(function(key) {
+				    var id = "input[name=" + key + "]";
+				    if ($(id, line).length) $(id, line).val(mapping[key]);
+				});
+			}
+			return;
+		}
+
+        // Messages
+        if (key == "message") {
+            window.alert(data.message);
+            return;
+        }
+
+        // Enable options
+        if (key.endsWith("Visible")) {
+            var module = key.slice(0,-7);
+            console.log(module);
+            $(".module-" + module).show();
+            return;
+        }
+
+        // Pre-process
+        if (key == "network") {
+            data.network = data.network.toUpperCase();
+        }
+        if (key == "mqttStatus") {
+            data.mqttStatus = data.mqttStatus ? "CONNECTED" : "NOT CONNECTED";
+        }
 
         // Look for INPUTs
         var element = $("input[name=" + key + "]");
         if (element.length > 0) {
             if (element.attr('type') == 'checkbox') {
-                element.prop("checked", data[key] == 1)
-                    .iphoneStyle({
-                        resizeContainer: false,
-                        resizeHandle: false,
-                        checkedLabel: 'ON',
-                        uncheckedLabel: 'OFF'
-                    })
+                element
+                    .prop("checked", data[key])
                     .iphoneStyle("refresh");
             } else {
                 element.val(data[key]);
             }
+            return;
         }
 
         // Look for SELECTs
         var element = $("select[name=" + key + "]");
         if (element.length > 0) {
             element.val(data[key]);
+            return;
         }
 
     });
-
-    // WIFI
-    var groups = $("#panel-wifi .pure-g");
-    for (var i in data.wifi) {
-        var wifi = data.wifi[i];
-        Object.keys(wifi).forEach(function(key) {
-            var id = "input[name=" + key + "]";
-            if ($(id, groups[i]).length) $(id, groups[i]).val(wifi[key]);
-        });
-    };
-
-    // TOPICS
-    for (var i in data.mapping) {
-
-        // add a new row
-        addMapping();
-
-        // get group
-        var line = $("#mapping .pure-g")[i];
-
-        // fill in the blanks
-        var mapping = data.mapping[i];
-        Object.keys(mapping).forEach(function(key) {
-            var id = "input[name=" + key + "]";
-            if ($(id, line).length) $(id, line).val(mapping[key]);
-        });
-
-    }
 
 }
 
@@ -149,6 +149,20 @@ function getJson(str) {
     } catch (e) {
         return false;
     }
+}
+
+function initWebSocket(host) {
+    if (host === undefined) {
+        host = window.location.hostname;
+    }
+    websock = new WebSocket('ws://' + host + '/ws');
+    websock.onopen = function(evt) {};
+    websock.onclose = function(evt) {};
+    websock.onerror = function(evt) {};
+    websock.onmessage = function(evt) {
+        var data = getJson(evt.data);
+        if (data) processData(data);
+    };
 }
 
 function init() {
@@ -161,16 +175,22 @@ function init() {
     $(".button-reconnect").on('click', doReconnect);
     $(".pure-menu-link").on('click', showPanel);
 
-    var host = window.location.hostname;
-    //host = "rfm69gw.local";
-    websock = new WebSocket('ws://' + host + ':81/');
-    websock.onopen = function(evt) {};
-    websock.onclose = function(evt) {};
-    websock.onerror = function(evt) {};
-    websock.onmessage = function(evt) {
-        var data = getJson(evt.data);
-        if (data) processData(data);
-    };
+    $("input[type='checkbox']")
+        .iphoneStyle({
+            resizeContainer: true,
+            resizeHandle: true,
+            checkedLabel: 'ON',
+            uncheckedLabel: 'OFF'
+        })
+        .iphoneStyle("refresh");
+
+
+    $.ajax({
+        'method': 'GET',
+        'url': '/auth'
+    }).done(function(data) {
+        initWebSocket();
+    });
 
 }
 

@@ -72,7 +72,7 @@ class RFM69Manager: public RFM69_ATC {
             return &_message;
         }
 
-    private:
+    protected:
 
         packet_t _message;
         TMessageCallback _callback = NULL;
@@ -82,6 +82,8 @@ class RFM69Manager: public RFM69_ATC {
             unsigned char _sendCount = 0;
         #endif
         unsigned int _ackCount = 0;
+
+        virtual void select();
 
 };
 

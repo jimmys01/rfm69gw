@@ -23,18 +23,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-#include "version.h"
-#include "defaults.h"
-#include "debug.h"
-#include <WebSockets.h>
-#include "FS.h"
-#include <NtpClientLib.h>
-#include "RFM69Manager.h"
+#include <Arduino.h>
+#include "config/all.h"
 
 // -----------------------------------------------------------------------------
 // Prototypes
 // -----------------------------------------------------------------------------
 
+#include <NtpClientLib.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncMqttClient.h>
+#include "RFM69Manager.h"
+#include "FS.h"
 String getSetting(const String& key, String defaultValue = "");
 
 struct _node_t {
@@ -47,8 +47,14 @@ struct _node_t {
 _node_t nodeInfo[255];
 
 // -----------------------------------------------------------------------------
-// Common methods
+// METHODS
 // -----------------------------------------------------------------------------
+
+String getIdentifier() {
+    char identifier[20];
+    sprintf(identifier, "%s_%06X", DEVICE, ESP.getChipId());
+    return String(identifier);
+}
 
 void ledOn() {
     digitalWrite(LED_PIN, LOW);
@@ -72,7 +78,7 @@ void processMessage(packet_t * data) {
     blink(5, 1);
 
     DEBUG_MSG(
-        "[MESSAGE] messageID:%d senderID:%d targetID:%d packetID:%d name:%s value:%s rssi:%d\n",
+        "[MESSAGE] messageID:%d senderID:%d targetID:%d packetID:%d name:%s value:%s rssi:%d",
         data->messageID,
         data->senderID,
         data->targetID,
@@ -113,7 +119,7 @@ void processMessage(packet_t * data) {
         PSTR("{'senderID': %u, 'targetID': %u, 'packetID': %u, 'name': '%s', 'value': '%s', 'rssi': %d, 'duplicates': %d, 'missing': %d}"),
         data->senderID, data->targetID, data->packetID, data->name, data->value, data->rssi,
         nodeInfo[data->senderID].duplicates , nodeInfo[data->senderID].missing);
-    webSocketSend(buffer);
+    wsSend(buffer);
 
     // Try to find a matching mapping
     bool found = false;
@@ -193,27 +199,36 @@ void welcome() {
 // -----------------------------------------------------------------------------
 
 void setup() {
+
     hardwareSetup();
+
     welcome();
+
     settingsSetup();
-    otaSetup();
+    if (getSetting("hostname").length() == 0) {
+        setSetting("hostname", String() + getIdentifier());
+        saveSettings();
+    }
+
     wifiSetup();
+    otaSetup();
     mqttSetup();
     radioSetup();
-    webServerSetup();
-    webSocketSetup();
+    webSetup();
     ntpSetup();
+
 }
 
 void loop() {
+
     hardwareLoop();
     settingsLoop();
-    otaLoop();
     wifiLoop();
+    otaLoop();
     mqttLoop();
     radioLoop();
-    webServerLoop();
-    webSocketLoop();
     ntpLoop();
-    delay(5);
+
+    yield();
+
 }

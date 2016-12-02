@@ -68,7 +68,7 @@ legend {
 div.hint {
     font-size: 80%;
     color: #ccc;
-    margin-top: -10px;
+    margin-top: 0px;
 }
 #template {
     display: none;

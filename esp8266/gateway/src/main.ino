@@ -73,6 +73,13 @@ void blink(unsigned int delayms, unsigned char times = 1) {
     }
 }
 
+void clearCounts() {
+    for(unsigned int i=0; i<255; i++) {
+        nodeInfo[i].duplicates = 0;
+        nodeInfo[i].missing = 0;
+    }
+}
+
 void processMessage(packet_t * data) {
 
     blink(5, 1);
@@ -91,18 +98,20 @@ void processMessage(packet_t * data) {
     // Detect duplicates and missing packets
     // packetID==0 means device is not sending packetID info
     if (data->packetID > 0) {
+        if (nodeInfo[data->senderID].count > 0) {
 
-        unsigned char gap = data->packetID - nodeInfo[data->senderID].lastPacketID;
+            unsigned char gap = data->packetID - nodeInfo[data->senderID].lastPacketID;
 
-        if (gap == 0) {
-            DEBUG_MSG(" DUPLICATED");
-            nodeInfo[data->senderID].duplicates = nodeInfo[data->senderID].duplicates + 1;
-            return;
-        }
+            if (gap == 0) {
+                DEBUG_MSG(" DUPLICATED");
+                nodeInfo[data->senderID].duplicates = nodeInfo[data->senderID].duplicates + 1;
+                return;
+            }
 
-        if ((gap > 1) && (data->packetID > 1)) {
-            DEBUG_MSG(" MISSING PACKETS!!");
-            nodeInfo[data->senderID].missing = nodeInfo[data->senderID].missing + gap - 1;
+            if ((gap > 1) && (data->packetID > 1)) {
+                DEBUG_MSG(" MISSING PACKETS!!");
+                nodeInfo[data->senderID].missing = nodeInfo[data->senderID].missing + gap - 1;
+            }
         }
 
     }
@@ -116,7 +125,7 @@ void processMessage(packet_t * data) {
     char buffer[60];
     sprintf_P(
         buffer,
-        PSTR("{'senderID': %u, 'targetID': %u, 'packetID': %u, 'name': '%s', 'value': '%s', 'rssi': %d, 'duplicates': %d, 'missing': %d}"),
+        PSTR("{\"packet\": {\"senderID\": %u, \"targetID\": %u, \"packetID\": %u, \"name\": \"%s\", \"value\": \"%s\", \"rssi\": %d, \"duplicates\": %d, \"missing\": %d}}"),
         data->senderID, data->targetID, data->packetID, data->name, data->value, data->rssi,
         nodeInfo[data->senderID].duplicates , nodeInfo[data->senderID].missing);
     wsSend(buffer);

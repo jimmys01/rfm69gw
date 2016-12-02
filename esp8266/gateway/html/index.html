@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="side-menu.css" />
         <link rel="stylesheet" href="grids-responsive-min.css" />
         <link rel="stylesheet" href="checkboxes.css" />
+        <link rel="stylesheet" href="jquery.dataTables.min.css" />
         <link rel="stylesheet" href="custom.css" />
         <!-- endbuild -->
 
@@ -50,6 +51,10 @@
 
                         <li class="pure-menu-item">
                             <a href="#" class="pure-menu-link" data="panel-mapping">MAPPING</a>
+                        </li>
+
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link" data="panel-messages">MESSAGES</a>
                         </li>
 
                     </ul>
@@ -279,6 +284,41 @@
                         </div>
                     </div>
 
+                    <div class="panel" id="panel-messages">
+
+                        <div class="header">
+                            <h1>MESSAGES</h1>
+                            <h2>
+                                Messages being received. Previous messages are not displayed. You have to keep the page open in order to keep receiving them. You can filter/unfilter by clicking on the values. Filtered colums have red headers.
+                            </h2>
+                        </div>
+
+                        <div class="page">
+
+                            <table id="messages" class="display" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>SenderID</th>
+                                        <th>PacketID</th>
+                                        <th>TargetID</th>
+                                        <th>Name</th>
+                                        <th>Value</th>
+                                        <th>RSSI</th>
+                                        <th>Duplicates</th>
+                                        <th>Missing</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+
+                            <button class="pure-button button-clear-counts">Clear counts</button>
+
+
+                        </div>
+                    </div>
+
                 </form>
 
                 <div id="template">
@@ -298,6 +338,7 @@
 
     <!-- build:js script.js -->
     <script src="jquery-1.12.3.min.js"></script>
+    <script src="jquery.dataTables.min.js"></script>
     <script src="checkboxes.js"></script>
     <script src="custom.js"></script>
     <!-- endbuild -->

@@ -7,4 +7,3 @@ firmware*
 .sconsign.dblite
 credentials.h
 node_modules
-esp8266/gateway/data

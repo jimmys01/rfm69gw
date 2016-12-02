@@ -60,6 +60,7 @@ void _wsParse(uint32_t client_id, uint8_t * payload, size_t length) {
 
         if (action.equals("reset")) ESP.reset();
         if (action.equals("reconnect")) wifiDisconnect();
+        if (action.equals("clear-counts")) clearCounts();
 
     };
 

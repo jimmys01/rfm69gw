@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Added
+- Added messages tab in web interface with sorting and filtering
+
 ## [0.9.0] 2016-12-01
 ### Added
 - Added unique admin password (OTA, WIFI and WEB interface)

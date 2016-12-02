@@ -1,5 +1,7 @@
 var websock;
 var tabindex = $("#mapping > div").length * 3 + 50;
+var messages;
+var filters = [];
 
 function doUpdate() {
     var data = $("#formSave").serializeArray();
@@ -12,6 +14,11 @@ function doReset() {
     var response = window.confirm("Are you sure you want to reset the device?");
     if (response == false) return false;
     websock.send(JSON.stringify({'action': 'reset'}));
+    return false;
+}
+
+function doClear() {
+    websock.send(JSON.stringify({'action': 'clear-counts'}));
     return false;
 }
 
@@ -63,6 +70,24 @@ function processData(data) {
     }
 
     Object.keys(data).forEach(function(key) {
+
+        // Packet
+        if (key == "packet") {
+            var packet = data.packet;
+            var d = new Date();
+            messages.row.add([
+                d.toLocaleTimeString('en-US', { hour12: false }),
+                packet.senderID,
+                packet.packetID,
+                packet.targetID,
+                packet.name,
+                packet.value,
+                packet.rssi,
+                packet.duplicates,
+                packet.missing,
+            ]).draw(false);
+            return;
+        }
 
         // Wifi
         if (key == "wifi") {
@@ -173,7 +198,32 @@ function init() {
     $(".button-update").on('click', doUpdate);
     $(".button-reset").on('click', doReset);
     $(".button-reconnect").on('click', doReconnect);
+    $(".button-clear-counts").on('click', doClear);
     $(".pure-menu-link").on('click', showPanel);
+
+    messages = $('#messages').DataTable({
+        "paging": false
+    });
+
+    for (var i = 0; i < messages.columns()[0].length; i++) {
+        filters[i] = null;
+    }
+
+    $('#messages tbody').on('click', 'td', function () {
+        var c = messages.cell(this).index().column;
+        var column = messages.column(c);
+        if (filters[c] == null) {
+            var data = messages.row(this).data();
+            filters[c] = data[c];
+            column.search( '^' + data[c] + '$', true, false );
+            $(column.header()).addClass("filtered");
+        } else {
+            filters[c] = null;
+            column.search("");
+            $(column.header()).removeClass("filtered");
+        }
+        column.draw();
+    });
 
     $("input[type='checkbox']")
         .iphoneStyle({

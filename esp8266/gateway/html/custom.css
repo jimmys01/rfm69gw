@@ -48,6 +48,10 @@
     margin-top: 5px;
     background: rgb(202, 60, 60);
 }
+.button-clear-counts {
+    margin-top: 15px;
+    background: rgb(202, 60, 60);
+}
 .pure-g {
     margin-bottom: 20px;
 }
@@ -72,4 +76,15 @@ div.hint {
 }
 #template {
     display: none;
+}
+table.dataTable.display tbody td {
+    text-align: center;
+}
+
+#messages_filter {
+    display: none;
+}
+
+.filtered {
+    color: rgb(202, 60, 60);
 }

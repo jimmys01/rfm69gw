@@ -17,7 +17,7 @@ function doReset() {
     return false;
 }
 
-function doClear() {
+function doClearCounts() {
     websock.send(JSON.stringify({'action': 'clear-counts'}));
     return false;
 }
@@ -26,6 +26,42 @@ function doReconnect() {
     var response = window.confirm("Are you sure you want to disconnect from the current WIFI network?");
     if (response == false) return false;
     websock.send(JSON.stringify({'action': 'reconnect'}));
+    return false;
+}
+
+function doFilter(e) {
+    var index = messages.cell(this).index();
+    if (index == 'undefined') return;
+    var c = index.column;
+    var column = messages.column(c);
+    if (filters[c]) {
+        filters[c] = false;
+        column.search("");
+        $(column.header()).removeClass("filtered");
+    } else {
+        filters[c] = true;
+        var data = messages.row(this).data();
+        if (e.which == 1) {
+            column.search('^' + data[c] + '$', true, false );
+        } else {
+            column.search('^((?!(' + data[c] + ')).)*$', true, false );
+        }
+        $(column.header()).addClass("filtered");
+    }
+    column.draw();
+    return false;
+}
+
+function doClearFilters() {
+    for (var i = 0; i < messages.columns()[0].length; i++) {
+        if (filters[i]) {
+            filters[i] = false;
+            var column = messages.column(i);
+            column.search("");
+            $(column.header()).removeClass("filtered");
+            column.draw();
+        }
+    }
     return false;
 }
 
@@ -198,32 +234,18 @@ function init() {
     $(".button-update").on('click', doUpdate);
     $(".button-reset").on('click', doReset);
     $(".button-reconnect").on('click', doReconnect);
-    $(".button-clear-counts").on('click', doClear);
+    $(".button-clear-counts").on('click', doClearCounts);
+    $(".button-clear-filters").on('click', doClearFilters);
     $(".pure-menu-link").on('click', showPanel);
+    $('#messages tbody').on('mousedown', 'td', doFilter);
 
     messages = $('#messages').DataTable({
         "paging": false
     });
 
     for (var i = 0; i < messages.columns()[0].length; i++) {
-        filters[i] = null;
+        filters[i] = false;
     }
-
-    $('#messages tbody').on('click', 'td', function () {
-        var c = messages.cell(this).index().column;
-        var column = messages.column(c);
-        if (filters[c] == null) {
-            var data = messages.row(this).data();
-            filters[c] = data[c];
-            column.search( '^' + data[c] + '$', true, false );
-            $(column.header()).addClass("filtered");
-        } else {
-            filters[c] = null;
-            column.search("");
-            $(column.header()).removeClass("filtered");
-        }
-        column.draw();
-    });
 
     $("input[type='checkbox']")
         .iphoneStyle({

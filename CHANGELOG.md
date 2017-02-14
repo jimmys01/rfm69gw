@@ -3,6 +3,19 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.9.4] 2017-02-14
+### Changed
+- Issue #3. Using forken Time.h library to prevent build error on Windows hosts
+
+## [0.9.3] 2017-02-06
+### Added
+- EEPROM management commands from terminal interface
+
+### Changed
+- Defer reconnection when issued from web interface to allow the response to get out
+- Improved MQTT and NTP connections
+- Multiple small changes from ESPurna firmware
+
 ## [0.9.1] 2017-01-22
 ### Added
 - Added messages tab in web interface with sorting and filtering

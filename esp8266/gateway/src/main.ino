@@ -253,4 +253,6 @@ void loop() {
         nofussLoop();
     #endif
 
+    yield();
+    
 }

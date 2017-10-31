@@ -31,7 +31,7 @@ unsigned long _packetCount;
 
 void _processMessage(packet_t * data) {
 
-    //blink(5, 1);
+    blink(5, 1);
 
     DEBUG_MSG_P(
         PSTR("[MESSAGE] messageID:%d senderID:%d targetID:%d packetID:%d name:%s value:%s rssi:%d\n"),
@@ -72,18 +72,20 @@ void _processMessage(packet_t * data) {
     _nodeInfo[data->senderID].lastPacketID = data->packetID;
     _nodeInfo[data->senderID].count = _nodeInfo[data->senderID].count + 1;
 
-    DEBUG_MSG("\n");
-
     // Send info to websocket clients
-    char buffer[120];
-    snprintf_P(
-        buffer,
-        sizeof(buffer) - 1,
-        PSTR("{\"nodeCount\": %d, \"packetCount\": %lu, \"packet\": {\"senderID\": %u, \"targetID\": %u, \"packetID\": %u, \"name\": \"%s\", \"value\": \"%s\", \"rssi\": %d, \"duplicates\": %d, \"missing\": %d}}"),
-        _nodeCount, _packetCount,
-        data->senderID, data->targetID, data->packetID, data->name, data->value, data->rssi,
-        _nodeInfo[data->senderID].duplicates , _nodeInfo[data->senderID].missing);
-    wsSend(buffer);
+    {
+        char buffer[200];
+        snprintf_P(
+            buffer,
+            sizeof(buffer) - 1,
+            PSTR("{\"nodeCount\": %d, \"packetCount\": %lu, \"packet\": {\"senderID\": %u, \"targetID\": %u, \"packetID\": %u, \"name\": \"%s\", \"value\": \"%s\", \"rssi\": %d, \"duplicates\": %d, \"missing\": %d}}"),
+            _nodeCount, _packetCount,
+            data->senderID, data->targetID, data->packetID, data->name, data->value, data->rssi,
+            _nodeInfo[data->senderID].duplicates , _nodeInfo[data->senderID].missing);
+
+        Serial.println(buffer);
+        wsSend(buffer);
+    }
 
     // Try to find a matching mapping
     bool found = false;
@@ -91,7 +93,7 @@ void _processMessage(packet_t * data) {
     for (unsigned int i=0; i<count; i++) {
         if ((getSetting("nodeid" + String(i)) == String(data->senderID)) &&
             (getSetting("key" + String(i)) == data->name)) {
-            mqttSend((char *) getSetting("topic" + String(i)).c_str(), (char *) String(data->value).c_str());
+            mqttSendRaw((char *) getSetting("topic" + String(i)).c_str(), (char *) String(data->value).c_str());
             found = true;
             break;
         }
@@ -102,7 +104,7 @@ void _processMessage(packet_t * data) {
         if (topic.length() > 0) {
             topic.replace("{nodeid}", String(data->senderID));
             topic.replace("{key}", String(data->name));
-            mqttSend((char *) topic.c_str(), (char *) String(data->value).c_str());
+            mqttSendRaw((char *) topic.c_str(), (char *) String(data->value).c_str());
         }
     }
 

@@ -424,6 +424,8 @@ function addNetwork() {
 
 function processData(data) {
 
+    console.log(data);
+
     // title
     if ("app" in data) {
         var title = data.app;

@@ -14,7 +14,7 @@
     left: 0;
     right: 0;
     padding: 10px;
-    font-size: 80%;
+    font-size: 70%;
     color: #999;
 }
 #menu .footer a {
@@ -60,9 +60,11 @@
     background: rgb(0, 202, 0);
     margin-left: 5px;
 }
+.button-add-mapping,
 .button-add-network {
     background: rgb(28, 184, 65);
 }
+.button-del-mapping,
 .button-del-network {
     background: rgb(202, 60, 60);
 }

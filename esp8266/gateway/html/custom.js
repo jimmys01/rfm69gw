@@ -18,15 +18,15 @@ var filters = [];
 // -----------------------------------------------------------------------------
 
 function initMessages() {
-    messages[01] = "Remote update started";
-    messages[02] = "OTA update started";
-    messages[03] = "Error parsing data!";
-    messages[04] = "The file does not look like a valid configuration backup or is corrupted";
-    messages[05] = "Changes saved. You should reboot your board now";
-    messages[06] = "Home Assistant auto-discovery message sent";
-    messages[07] = "Passwords do not match!";
-    messages[08] = "Changes saved";
-    messages[09] = "No changes detected";
+    messages[1] = "Remote update started";
+    messages[2] = "OTA update started";
+    messages[3] = "Error parsing data!";
+    messages[4] = "The file does not look like a valid configuration backup or is corrupted";
+    messages[5] = "Changes saved. You should reboot your board now";
+    messages[6] = "Home Assistant auto-discovery message sent";
+    messages[7] = "Passwords do not match!";
+    messages[8] = "Changes saved";
+    messages[9] = "No changes detected";
     messages[10] = "Session expired, please reload page...";
 }
 
@@ -684,8 +684,8 @@ function init() {
         $("div.more", addNetwork()).toggle();
     });
 
-    $(".button-add").on('click', addMapping);
-    $(".button-del").on('click', delMapping);
+    $(".button-add-mapping").on('click', addMapping);
+    $(".button-del-mapping").on('click', delMapping);
     $(".button-clear-counts").on('click', doClearCounts);
     $(".button-clear-filters").on('click', doClearFilters);
     $('#packets tbody').on('mousedown', 'td', doFilter);
@@ -694,7 +694,8 @@ function init() {
     $(document).on('change', 'select', hasChanged);
 
     packets = $('#packets').DataTable({
-        "paging": false
+        "paging": false,
+        "searching": false
     });
 
     for (var i = 0; i < packets.columns()[0].length; i++) {

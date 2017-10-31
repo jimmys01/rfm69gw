@@ -82,8 +82,6 @@ void _processMessage(packet_t * data) {
             _nodeCount, _packetCount,
             data->senderID, data->targetID, data->packetID, data->name, data->value, data->rssi,
             _nodeInfo[data->senderID].duplicates , _nodeInfo[data->senderID].missing);
-
-        Serial.println(buffer);
         wsSend(buffer);
     }
 

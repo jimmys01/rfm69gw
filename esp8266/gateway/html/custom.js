@@ -424,13 +424,11 @@ function addNetwork() {
 
 function processData(data) {
 
-    console.log(data);
-
     // title
-    if ("app" in data) {
-        var title = data.app;
-		if ("version" in data) {
-			title = title + " " + data.version;
+    if ("app_name" in data) {
+        var title = data.app_name;
+		if ("app_version" in data) {
+			title = title + " " + data.app_version;
 		}
         $(".pure-menu-heading").html(title);
         if ("hostname" in data) {
@@ -696,8 +694,7 @@ function init() {
     $(document).on('change', 'select', hasChanged);
 
     packets = $('#packets').DataTable({
-        "paging": false,
-        "searching": false
+        "paging": false
     });
 
     for (var i = 0; i < packets.columns()[0].length; i++) {

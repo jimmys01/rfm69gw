@@ -159,11 +159,9 @@ div.state {
 table.dataTable.display tbody td {
     text-align: center;
 }
-
-#messages_filter {
+#packets_filter {
     display: none;
 }
-
 .filtered {
     color: rgb(202, 60, 60);
 }

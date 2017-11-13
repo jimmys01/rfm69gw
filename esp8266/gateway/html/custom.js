@@ -477,6 +477,15 @@ function processData(data) {
             return;
         }
 
+        if (key == "uptime") {
+            var uptime  = parseInt(data[key]);
+            var seconds = uptime % 60; uptime = parseInt(uptime / 60);
+            var minutes = uptime % 60; uptime = parseInt(uptime / 60);
+            var hours   = uptime % 24; uptime = parseInt(uptime / 24);
+            var days    = uptime;
+            data[key] = days + 'd ' + zeroPad(hours, 2) + 'h ' + zeroPad(minutes, 2) + 'm ' + zeroPad(seconds, 2) + 's';
+        }
+
         if (key == "maxNetworks") {
             maxNetworks = parseInt(data.maxNetworks);
             return;

@@ -104,20 +104,20 @@
 // HEARTBEAT
 //------------------------------------------------------------------------------
 
-#define HEARTBEAT_INTERVAL          300000      // Interval between heartbeat messages (in ms)
+#define HEARTBEAT_INTERVAL          60000       // Interval between heartbeat messages (in ms)
 #define UPTIME_OVERFLOW             4294967295  // Uptime overflow value
 
 // Topics that will be reported in heartbeat
 #define HEARTBEAT_REPORT_STATUS     1
-#define HEARTBEAT_REPORT_IP         1
-#define HEARTBEAT_REPORT_MAC        1
-#define HEARTBEAT_REPORT_RSSI       1
+#define HEARTBEAT_REPORT_IP         0
+#define HEARTBEAT_REPORT_MAC        0
+#define HEARTBEAT_REPORT_RSSI       0
 #define HEARTBEAT_REPORT_UPTIME     1
 #define HEARTBEAT_REPORT_FREEHEAP   1
 #define HEARTBEAT_REPORT_VCC        0
-#define HEARTBEAT_REPORT_HOSTNAME   1
-#define HEARTBEAT_REPORT_APP        1
-#define HEARTBEAT_REPORT_VERSION    1
+#define HEARTBEAT_REPORT_HOSTNAME   0
+#define HEARTBEAT_REPORT_APP        0
+#define HEARTBEAT_REPORT_VERSION    0
 #define HEARTBEAT_REPORT_INTERVAL   0
 
 //------------------------------------------------------------------------------

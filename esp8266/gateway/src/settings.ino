@@ -137,6 +137,7 @@ void settingsSetup() {
 
     Embedis::command( F("INFO"), [](Embedis* e) {
         welcome();
+        wifiStatus();
         e->response(Embedis::OK);
     });
 

@@ -89,7 +89,7 @@ void wifiConfigure() {
     }
 
     // Scan for best network only if we have more than 1 defined
-    jw.scanNetworks(i>1);
+    jw.scanNetworks(true);
 
 }
 
@@ -107,20 +107,26 @@ void wifiStatus() {
     }
 
     if ((WiFi.getMode() & WIFI_AP) == WIFI_AP) {
-        DEBUG_MSG_P(PSTR("[WIFI] SSID %s\n"), jw.getAPSSID().c_str());
-        DEBUG_MSG_P(PSTR("[WIFI] PASS %s\n"), getSetting("adminPass", ADMIN_PASS).c_str());
-        DEBUG_MSG_P(PSTR("[WIFI] IP   %s\n"), WiFi.softAPIP().toString().c_str());
-        DEBUG_MSG_P(PSTR("[WIFI] MAC  %s\n"), WiFi.softAPmacAddress().c_str());
+        DEBUG_MSG_P(PSTR("[WIFI] SSID  %s\n"), jw.getAPSSID().c_str());
+        DEBUG_MSG_P(PSTR("[WIFI] PASS  %s\n"), getSetting("adminPass", ADMIN_PASS).c_str());
+        DEBUG_MSG_P(PSTR("[WIFI] IP    %s\n"), WiFi.softAPIP().toString().c_str());
+        DEBUG_MSG_P(PSTR("[WIFI] MAC   %s\n"), WiFi.softAPmacAddress().c_str());
     }
 
     if ((WiFi.getMode() & WIFI_STA) == WIFI_STA) {
-        DEBUG_MSG_P(PSTR("[WIFI] SSID %s\n"), WiFi.SSID().c_str());
-        DEBUG_MSG_P(PSTR("[WIFI] IP   %s\n"), WiFi.localIP().toString().c_str());
-        DEBUG_MSG_P(PSTR("[WIFI] MAC  %s\n"), WiFi.macAddress().c_str());
-        DEBUG_MSG_P(PSTR("[WIFI] GW   %s\n"), WiFi.gatewayIP().toString().c_str());
-        DEBUG_MSG_P(PSTR("[WIFI] DNS  %s\n"), WiFi.dnsIP().toString().c_str());
-        DEBUG_MSG_P(PSTR("[WIFI] MASK %s\n"), WiFi.subnetMask().toString().c_str());
-        DEBUG_MSG_P(PSTR("[WIFI] HOST %s\n"), WiFi.hostname().c_str());
+        uint8_t * bssid = WiFi.BSSID();
+        DEBUG_MSG_P(PSTR("[WIFI] SSID  %s\n"), WiFi.SSID().c_str());
+        DEBUG_MSG_P(PSTR("[WIFI] BSSID %02X:%02X:%02X:%02X:%02X:%02X\n"),
+            bssid[0], bssid[1], bssid[2], bssid[3], bssid[4], bssid[5], bssid[6]
+        );
+        DEBUG_MSG_P(PSTR("[WIFI] CH    %d\n"), WiFi.channel());
+        DEBUG_MSG_P(PSTR("[WIFI] RSSI  %d\n"), WiFi.RSSI());
+        DEBUG_MSG_P(PSTR("[WIFI] IP    %s\n"), WiFi.localIP().toString().c_str());
+        DEBUG_MSG_P(PSTR("[WIFI] MAC   %s\n"), WiFi.macAddress().c_str());
+        DEBUG_MSG_P(PSTR("[WIFI] GW    %s\n"), WiFi.gatewayIP().toString().c_str());
+        DEBUG_MSG_P(PSTR("[WIFI] DNS   %s\n"), WiFi.dnsIP().toString().c_str());
+        DEBUG_MSG_P(PSTR("[WIFI] MASK  %s\n"), WiFi.subnetMask().toString().c_str());
+        DEBUG_MSG_P(PSTR("[WIFI] HOST  %s\n"), WiFi.hostname().c_str());
     }
 
     DEBUG_MSG_P(PSTR("[WIFI] ----------------------------------------------\n"));
@@ -176,7 +182,7 @@ void wifiSetup() {
     wifiConfigure();
 
     // Message callbacks
-    jw.onMessage([](justwifi_messages_t code, char * parameter) {
+    jw.subscribe([](justwifi_messages_t code, char * parameter) {
 
 		#if DEBUG_SUPPORT
 

@@ -3,6 +3,18 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.1] 2018-01-11
+### Changed
+- Updated JustWifi library to 1.1.6
+- Heartbeat every 60 seconds
+- Show friendly uptime in Web UI
+
+## [1.0.0] 2017-10-31
+### Changed
+- Migrating code base from ESPurna project
+- Changes in the web UI
+- WS and MQTT fixes and addons
+
 ## [0.9.4] 2017-02-14
 ### Changed
 - Issue #3. Using forken Time.h library to prevent build error on Windows hosts

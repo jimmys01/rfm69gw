@@ -27,14 +27,17 @@ The ESP12 and RFM69CW modules are wired according to the following schema:
 | GPIO13 | D7      | MOSI    |
 | GPIO14 | D5      | SCK     |
 | GPIO15 | D8      | NSS     |
+| GPIO16 | D0      | RST     |
 
 Note: there was an error in the ESP12 footprint for version 0.1 of the board: GPIO 4 and 5 were swapped. The schematic showed the IRQ pin to be GPIO4, but the GPIO5 pin was the pin in use.
 
 You can also use your own hardware, SPI pins will probably be the same, only remember to change the pin numbers for SPI_CS and interruption in the RFM69Manager.h file.
 
 ```
-#define SPI_CS              SS // GPIO15 (D8)
-#define IRQ_PIN             5  // GPIO5  (D1)
+#define SPI_CS              SS   // GPIO15 (D8)
+#define IRQ_PIN             5    // GPIO5  (D1)
+#define USE_RESET_PIN       true // Only if RFM's RESET pin connected.
+#define RESET_PIN           16   // GPIO16 (D0)
 ```
 
 ## Firmware

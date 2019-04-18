@@ -30,7 +30,16 @@ in an #if clause like this:
 
 #include "RFM69Manager.h"
 
-bool RFM69Manager::initialize(uint8_t frequency, uint8_t nodeID, uint8_t networkID, const char* key, uint8_t gatewayID, int16_t targetRSSI) {
+bool RFM69Manager::initialize(uint8_t frequency, uint8_t nodeID, uint8_t networkID, const char* key, uint8_t gatewayID, int16_t targetRSSI, bool useResetPin, uint8_t resetPin) {
+
+    if (useResetPin) {
+        // Reset timing per the datasheet.
+        pinMode(resetPin, OUTPUT);
+        digitalWrite(resetPin, HIGH);
+        delayMicroseconds(100);
+        digitalWrite(resetPin, LOW);
+        delay(5);
+    }
 
     bool ret = RFM69_ATC::initialize(frequency, nodeID, networkID);
     encrypt(key);

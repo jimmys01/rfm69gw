@@ -353,6 +353,8 @@ PROGMEM const char* const custom_reset_string[] = {
 #define PROMISCUOUS             1
 #define FREQUENCY               RF69_868MHZ
 #define ENCRYPTKEY              "fibonacci0123456"
-#define SPI_CS                  SS
-#define IRQ_PIN                 5
+#define SPI_CS                  SS // GPIO15 (D8)
+#define IRQ_PIN                 5  // GPIO5  (D1)
 #define IS_RFM69HW              0
+#define USE_RESET_PIN           true
+#define RESET_PIN               16

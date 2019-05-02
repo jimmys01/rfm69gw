@@ -133,10 +133,14 @@ unsigned long getPacketCount() {
 // RFM69
 // -----------------------------------------------------------------------------
 
+#ifndef USE_RESET_PIN
+#define USE_RESET_PIN false
+#endif
+
 void radioSetup() {
     delay(10);
     _radio = new RFM69Manager(SPI_CS, IRQ_PIN, IS_RFM69HW, digitalPinToInterrupt(IRQ_PIN));
-    _radio->initialize(FREQUENCY, NODEID, NETWORKID, ENCRYPTKEY);
+    _radio->initialize(FREQUENCY, NODEID, NETWORKID, ENCRYPTKEY, USE_RESET_PIN, RESET_PIN);
     _radio->promiscuous(PROMISCUOUS);
     _radio->onMessage(_processMessage);
 }

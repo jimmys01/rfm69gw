@@ -20,40 +20,25 @@ The custom PCB has the minimum required components:
 
 The ESP12 and RFM69CW modules are wired according to the following schema:
 
-| ESP12  | RFM69CW |
-|--------|---------|
-| GPIO4  | DIO0    |
-| GPIO12 | MISO    |
-| GPIO13 | MOSI    |
-| GPIO14 | SCK     |
-| GPIO15 | NSS     |
+| ESP12  | NodeMCU | RFM69CW |
+|--------|---------|---------|
+| GPIO5  | D1      | DIO0    |
+| GPIO12 | D6      | MISO    |
+| GPIO13 | D7      | MOSI    |
+| GPIO14 | D5      | SCK     |
+| GPIO15 | D8      | NSS     |
+| GPIO16 | D0      | RST     |
+
+Note: there was an error in the ESP12 footprint for version 0.1 of the board: GPIO 4 and 5 were swapped. The schematic showed the IRQ pin to be GPIO4, but the GPIO5 pin was the pin in use.
 
 You can also use your own hardware, SPI pins will probably be the same, only remember to change the pin numbers for SPI_CS and interruption in the RFM69Manager.h file.
 
 ```
-#define SPI_CS              SS
-#define IRQ_PIN             5
-#define IRQ_NUM             5
+#define SPI_CS              SS   // GPIO15 (D8)
+#define IRQ_PIN             5    // GPIO5  (D1)
+#define USE_RESET_PIN       true // Only if RFM's RESET pin connected.
+#define RESET_PIN           16   // GPIO16 (D0)
 ```
-
-**UPDATE**: The RFM69 library works a lot better over ESP8266 changing the SPI clock divider to 2. You will have to modify the source code for RFM69.cpp file with this patch:
-
-```
-diff --git a/RFM69.cpp b/RFM69.cpp
-index a1e1eeb..ad2e30b 100644
---- a/RFM69.cpp
-+++ b/RFM69.cpp
-@@ -450,7 +450,7 @@ void RFM69::select() {
-   // set RFM69 SPI settings
-   SPI.setDataMode(SPI_MODE0);
-   SPI.setBitOrder(MSBFIRST);
--  SPI.setClockDivider(SPI_CLOCK_DIV4); // decided to slow down from DIV2 after SPI stalling in some instances, especially visible on mega1284p when RFM69 and FLASH chip both present
-+  SPI.setClockDivider(SPI_CLOCK_DIV2); // speeding it up for the ESP8266
-   digitalWrite(_slaveSelectPin, LOW);
- }
-```
-
-Note: the was an error in the ESP12 footprint for version 0.1 of the board and GPIO 4 and 5 were swapped, so even thou the schematic showed IRQ pin to be GPIO4 it was 5 instead.
 
 ## Firmware
 
@@ -85,22 +70,22 @@ The project is ready to be build using [PlatformIO][2].
 Please refer to their web page for instructions on how to install the builder. Once installed:
 
 ```bash
-> platformio run --target upload -e wire-debug
-> platformio run --target uploadfs -e wire-debug
+> platformio run --target upload -e wire
+> platformio run --target uploadfs -e wire
 ```
 
 Once you have flashed it you can flash it again over-the-air using the ```ota``` environment:
 
 ```bash
-> platformio run --target upload -e ota-debug
-> platformio run --target uploadfs -e ota-debug
+> platformio run --target upload -e ota
+> platformio run --target uploadfs -e ota
 ```
 
 When using OTA environment it defaults to the IP address of the device in SoftAP mode. If you want to flash it when connected to your home network best way is to supply the IP of the device:
 
 ```bash
-> platformio run --target upload -e ota-debug--upload-port 192.168.1.151
-> platformio run --target uploadfs -e ota-debug --upload-port 192.168.1.151
+> platformio run --target upload -e ota --upload-port 192.168.1.151
+> platformio run --target uploadfs -e ota  --upload-port 192.168.1.151
 ```
 
 Library dependencies not included in the project are automatically managed via PlatformIO Library Manager.
